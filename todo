@@ -1,0 +1,6 @@
+I tried the docs from https://www.kernel.org/doc/html/latest/crypto/api-rng.html, because I wanted to write a kernel module that generates random bytes.
+	Problem 1: The header is missing
+
+Problem 2: rust docs not found
+	Sol: https://rust.docs.kernel.org/kernel/macro.container_of.html
+
