@@ -6,7 +6,6 @@
 struct crypto_rng *rng = NULL;
 static struct wsdb WSDB = { .root = RB_ROOT };
 
-//TODO: Cache RNG. or accept seed value 
 static int get_random_numbers(u8 *buf, unsigned int len)
 {
     char *drbg = "drbg_nopr_sha256"; /* Hash DRBG with SHA-256, no PR */
@@ -17,21 +16,28 @@ static int get_random_numbers(u8 *buf, unsigned int len)
         return -EINVAL;
     }
 
-    rng = crypto_alloc_rng(drbg, 0, 0);
-    if (IS_ERR(rng)) {
-        pr_debug("could not allocate RNG handle for %s\n", drbg);
-        return PTR_ERR(rng);
+    if (rng == NULL) {
+	    rng = crypto_alloc_rng(drbg, 0, 0);
+	    //TODO: Error handling, perform setup in init.
+	    if (IS_ERR(rng)) {
+		printk(KERN_INFO "could not allocate RNG handle for %s\n", drbg);
+		return PTR_ERR(rng);
+	    }
+	    crypto_rng_reset(rng, NULL, 0);
     }
 
+
+    //TODO:figure out log levels properly
     ret = crypto_rng_get_bytes(rng, buf, len);
     if (ret < 0)
-        pr_debug("generation of random numbers failed\n");
+        printk(KERN_INFO "generation of random numbers failed\n");
     else if (ret == 0)
-        pr_debug("RNG returned no data");
+        printk(KERN_INFO "RNG returned no data");
     else
-        pr_debug("RNG returned %d bytes of data\n", ret);
+        printk(KERN_INFO "RNG returned %d bytes of data\n", ret);
 
-    crypto_free_rng(rng);
+    //TODO:
+    //crypto_free_rng(rng);
     return ret;
 }
 
@@ -83,17 +89,35 @@ struct word_entry *ws_db_search(char *string) {
 	return NULL;
 }
 
+static void force_valid_word(char *w, unsigned len) {
+	for (unsigned i = 0; i < len; i++) {
+		char c=w[i];
+		c %= 52;
+		if (c < 26)
+			c=0x41+c;
+		else
+			c=0x61+c-26;
+		w[i]=c;
+	}
+	w[len-1]='\0';
+}
+
 struct word_entry *ws_db_gen(void) {
 	struct word_entry *entry = kzalloc(sizeof(struct word_entry), GFP_KERNEL);
-	u8 len; 
-	get_random_numbers(&len,1);
-	len = len < WORD_MLEN ? len : WORD_MLEN;
+	unsigned len = 0; 
+	int ret;
+	get_random_numbers((u8 *) &len,1);
+	len = len % WORD_MLEN;
+	printk(KERN_INFO "Wordsmith: rng len: %d\n",len);
 
 	//TODO: Fix non-ascii characters
 	//TODO: Fix null byte (add 1 to mlen in word_entry)
-	get_random_numbers((u8 *) &entry->keystring,len);
+	ret = get_random_numbers((u8 *) entry->keystring,len);
+	force_valid_word(entry->keystring,len);
+	/* TODO: Free bug */
+	if (ret == -1)
+		return NULL;
 	entry->keystring[WORD_MLEN-1] = '\0';
-	memcpy(entry->keystring,"obamna",5);
 
 	ws_db_ins(entry);
 

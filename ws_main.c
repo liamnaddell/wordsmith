@@ -5,8 +5,13 @@
 #include "ws_db.h"
 
 static int ws_threadfn(void *data) {
+	struct word_entry *we;
 	for (int i = 0; i < 5; i++) {
-		printk(KERN_INFO "Generated word: %s\n", ws_db_gen()->keystring);
+		we = ws_db_gen();
+		if (we)
+			printk(KERN_INFO "Generated word: %s\n", we->keystring);
+		else
+			printk(KERN_INFO "Failed to gen\n");
 	}
 	return 0;
 }
