@@ -4,3 +4,4 @@ I tried the docs from https://www.kernel.org/doc/html/latest/crypto/api-rng.html
 Problem 2: rust docs not found
 	Sol: https://rust.docs.kernel.org/kernel/macro.container_of.html
 
+Problem 3: Gentoo always has a driver crash on boot :thinky:

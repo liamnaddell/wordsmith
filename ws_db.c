@@ -93,7 +93,7 @@ struct word_entry *ws_db_gen(void) {
 	//TODO: Fix null byte (add 1 to mlen in word_entry)
 	get_random_numbers((u8 *) &entry->keystring,len);
 	entry->keystring[WORD_MLEN-1] = '\0';
-	memcpy(entry->keystring,"Jeff",5);
+	memcpy(entry->keystring,"obamna",5);
 
 	ws_db_ins(entry);
 
@@ -103,7 +103,6 @@ struct word_entry *ws_db_gen(void) {
 void ws_db_init(void) {
 	printk(KERN_INFO "Wordsmith: WSDB Init\n");
 }
-
 
 static void ws_db_free(struct rb_node *node) {
 	if (node == NULL)
