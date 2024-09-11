@@ -4,6 +4,7 @@
 
 struct wsdb {
 	struct rb_root root;
+	unsigned size;
 };
 
 typedef enum validity_t {
@@ -22,8 +23,9 @@ struct word_entry {
 };
 
 //TODO: Fix wsdb -> ws_db
-void ws_db_init(void);
+bool ws_db_init(void);
 void ws_db_exit(void);
 int ws_db_ins(struct word_entry *data);
 struct word_entry *ws_db_search(char *string);
 struct word_entry *ws_db_gen(void);
+bool ws_db_full(void);

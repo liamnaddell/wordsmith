@@ -5,3 +5,7 @@ Problem 2: rust docs not found
 	Sol: https://rust.docs.kernel.org/kernel/macro.container_of.html
 
 Problem 3: Gentoo always has a driver crash on boot :thinky:
+
+Problem 4: Completely random hack to reset the RNG, totally undocumented
+
+Problem 5: crypto RNG api inline strs say 0 = success, but docs say = 0 no bytes generated
