@@ -13,7 +13,7 @@ static int ws_threadfn(void *data) {
         else
             printk(KERN_INFO "Failed to gen\n");
 
-        fsleep(1000000);
+        fsleep(100000);
     }
     printk(KERN_INFO "Wordsmith: received stop signal\n");
     return 0;

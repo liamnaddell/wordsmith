@@ -98,15 +98,15 @@ struct word_entry *ws_db_gen(void) {
     unsigned len = 0; 
     int ret;
     ret = get_random_numbers((u8 *) &len,1);
-    if (ret <= 0)
+    if (ret < 0)
         goto err;
 
-    len = len % WORD_MLEN;
+    len = (len+1) % WORD_MLEN;
     printk(KERN_INFO "Wordsmith: rng len: %d\n",len);
 
     ret = get_random_numbers((u8 *) entry->keystring,len);
     force_valid_word(entry->keystring,len);
-    if (ret <= 0)
+    if (ret < 0)
         goto err;
 
     entry->keystring[WORD_MLEN-1] = '\0';
@@ -130,7 +130,7 @@ bool ws_db_init(void) {
     crypto_rng_reset(rng, NULL, 0);
     char buf;
     int res = get_random_numbers(&buf,1);
-    if (res <= 0) {
+    if (res < 0) {
         printk(KERN_INFO "Failed to generate random number after RNG initialization\n");
         return false;
     }
